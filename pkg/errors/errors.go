@@ -8,6 +8,11 @@ import (
 var (
 	ErrLocaleNotFound  = errors.New("requested language file not found")
 	ErrLocaleMalformed = errors.New("requested language file malformed")
+
+	ErrEnvironmentVars = errors.New("environment variables not set")
+
+	ErrLockfileNotFound  = errors.New("requested lockfile not found")
+	ErrLockfileMalformed = errors.New("requested lockfile malformed")
 )
 
 type AppError struct {
