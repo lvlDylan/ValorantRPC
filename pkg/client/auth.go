@@ -7,26 +7,6 @@ import (
 	"net/http"
 )
 
-func (c *Client) doLocalRequest(method string, endpoint string) (*http.Response, error) {
-	url := fmt.Sprintf("%s://127.0.0.1:%d%s", c.lockfile.Protocol, c.lockfile.Port, endpoint)
-	request, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	request.SetBasicAuth("riot", c.lockfile.Password)
-
-	response, err := c.localClient.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: status code %d", errors.ErrRiotApiRequestFailed, response.StatusCode)
-	}
-
-	return response, nil
-}
-
 func (c *Client) Auth() error {
 	response, err := c.doLocalRequest(http.MethodGet, "/entitlements/v1/token")
 	if err != nil {

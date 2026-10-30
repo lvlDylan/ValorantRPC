@@ -18,6 +18,9 @@ var (
 
 	ErrLockfileNotFound  = errors.New("requested lockfile not found")
 	ErrLockfileMalformed = errors.New("requested lockfile malformed")
+
+	ErrRiotApiRequestFailed = errors.New("riot api request failed")
+	ErrRiotApiMalformed     = errors.New("riot api response is malformed")
 )
 
 type AppError struct {
