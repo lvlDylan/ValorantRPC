@@ -1,0 +1,14 @@
+# Binaries
+/valorant-rpc
+*.exe
+*.exe?
+*.dll
+*.so
+*.dylib
+
+# IDEs
+.idea/
+.vscode/
+
+# Log file
+*.log
