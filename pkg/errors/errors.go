@@ -11,6 +11,8 @@ var (
 
 	ErrEnvironmentVars = errors.New("environment variables not set")
 
+	ErrLoggerCannotOpenFile = errors.New("cannot open log file")
+
 	ErrLockfileNotFound  = errors.New("requested lockfile not found")
 	ErrLockfileMalformed = errors.New("requested lockfile malformed")
 )
