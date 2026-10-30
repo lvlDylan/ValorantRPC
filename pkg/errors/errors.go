@@ -13,6 +13,9 @@ var (
 
 	ErrLoggerCannotOpenFile = errors.New("cannot open log file")
 
+	ErrConfigFileUnknown   = errors.New("config file unknown errormaintenant ")
+	ErrConfigFileMalformed = errors.New("config file malformed")
+
 	ErrLockfileNotFound  = errors.New("requested lockfile not found")
 	ErrLockfileMalformed = errors.New("requested lockfile malformed")
 )
