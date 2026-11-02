@@ -1,6 +1,6 @@
 {
-  "rpc.menu.details": "Dans les menus",
-  "rpc.menu.state": "En attente dans le lobby",
+  "rpc.menus.details": "Dans les menus",
+  "rpc.menus.state": "En attente dans le lobby",
   "rpc.ingame.details": "%s • %s",
   "rpc.ingame.state": "%s Score: %d - %d",
   "queue.custom": "Partie personnalisée",
