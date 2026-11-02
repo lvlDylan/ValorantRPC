@@ -38,22 +38,23 @@ func (e *Engine) tick() {
 		return
 	}
 
-	if state.SessionLoopState == "INGAME" {
-		if state.MatchID != "" && state.MatchID != e.currentMatchID {
+	if state.MatchID != "" {
+		if state.MatchID != e.currentMatchID {
 			e.currentMatchID = state.MatchID
 			e.matchStartTime = time.Now()
 			e.logger.Info("New match started", "match_id", state.MatchID)
+			state.StartTime = e.matchStartTime
 		}
-		state.StartTime = e.matchStartTime
 	} else {
 		e.currentMatchID = ""
-		e.matchStartTime = time.Time{}
+		e.matchStartTime = time.Now()
 		state.StartTime = e.matchStartTime
+		e.logger.Info("Match is ended.")
 	}
 
 	if err := e.discord.Update(state); err != nil {
 		e.logger.Error("Error updating discord", "error", err)
 	}
 
-	e.logger.Debug("RPC updated", "state", state.SessionLoopState, "mode", state.MatchMode, "map", state.MapPath)
+	e.logger.Debug("RPC updated", "mode", state.MatchMode, "map", state.MapPath, "match_id", state.MatchID)
 }

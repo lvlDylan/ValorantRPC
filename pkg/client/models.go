@@ -34,15 +34,14 @@ type regionResponse struct {
 	Region string `json:"region"`
 }
 type GameState struct {
-	SessionLoopState string // MENUS, PREGAME OR INGAME
-	MatchMode        string // "competitive", "unranked", "deathmatch"....
-	MapPath          string // /Game/Maps/Ascent/Ascent
-	IsCustomGame     bool   // TRUE or FALSE
-	AllyScore        int
-	EnemyScore       int
-	MatchID          string
-	AgentID          string
-	StartTime        time.Time
+	MatchMode    string // "competitive", "unranked", "deathmatch"....
+	MapPath      string // /Game/Maps/Ascent/Ascent
+	IsCustomGame bool   // TRUE or FALSE
+	AllyScore    int
+	EnemyScore   int
+	MatchID      string
+	AgentID      string
+	StartTime    time.Time
 }
 
 type PresenceResponse struct {
@@ -52,13 +51,9 @@ type PresenceResponse struct {
 	} `json:"presences"`
 }
 type Private struct {
-	IsCustomGame                  bool   `json:"isCustomGame"`
-	SessionLoopState              string `json:"sessionLoopState"`
 	PartyOwnerMatchScoreAllyTeam  int    `json:"partyOwnerMatchScoreAllyTeam"`
 	PartyOwnerMatchScoreEnemyTeam int    `json:"partyOwnerMatchScoreEnemyTeam"`
-	MatchMap                      string `json:"matchMap"`
 	QueueID                       string `json:"queueId"`
-	ProvisioningFlow              string `json:"provisioningFlow"`
 }
 
 type GamePlayerResponse struct {
@@ -73,10 +68,10 @@ type Player struct {
 }
 
 type GameDetailsResponse struct {
-	MatchID string   `json:"MatchID"`
-	State   string   `json:"State"`
-	MapUrl  string   `json:"MapID"`
-	ModeID  string   `json:"ModeID"`
-	Type    string   `json:"ProvisioningFlow"`
-	Players []Player `json:"Players"`
+	MatchID          string   `json:"MatchID"`
+	State            string   `json:"State"`
+	MapUrl           string   `json:"MapID"`
+	ModeID           string   `json:"ModeID"`
+	ProvisioningFlow string   `json:"ProvisioningFlow"`
+	Players          []Player `json:"Players"`
 }

@@ -13,7 +13,7 @@ func (c *Client) mapGameStateToActivity(state *client.GameState) discord.Activit
 		return discord.Activity{}
 	}
 
-	if state.MatchMode == "MENUS" || state.SessionLoopState == "MENUS" {
+	if state.MatchMode == "MENUS" || state.MatchID == "" {
 		return discord.Activity{
 			Type:    discord.Playing,
 			Details: c.translator.T("rpc.menus.details"),

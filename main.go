@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const DISCORD_APP_ID = "1564597359281832076"
+const DiscordAppId = "1564597359281832076"
 
 func main() {
 	logger, err := logging.New(logging.Config{
@@ -44,7 +44,7 @@ func main() {
 		panic(err)
 	}
 
-	discordClient := discord.New(DISCORD_APP_ID, translator, registry, logger)
+	discordClient := discord.New(DiscordAppId, translator, registry, logger)
 	appEngine := engine.New(riotClient, discordClient, logger, 15*time.Second)
 
 	stop := make(chan os.Signal, 1)

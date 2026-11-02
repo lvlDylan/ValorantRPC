@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -91,41 +92,35 @@ func findAgentIdByPlayerUUID(playerUUID string, players []Player) string {
 }
 
 func (c *Client) GetGameState() (*GameState, error) {
-	presence, err := c.getPlayerState()
+
+	match, err := c.GetGameMatch()
 	if err != nil {
 		return nil, errors.New("player_state.GetGameState", err)
 	}
 
-	if presence.SessionLoopState == "MENUS" {
+	if match == nil || match.MatchID == "" {
 		return &GameState{
 			MatchMode: "MENUS",
 		}, nil
 	}
 
-	state := &GameState{
-		SessionLoopState: presence.SessionLoopState,
-		MatchMode:        formatQueueId(presence.ProvisioningFlow, presence.QueueID, presence.IsCustomGame),
-		MapPath:          presence.MatchMap,
+	matchDetails, err := c.GetGameMatchDetails(match.MatchID)
+	if err != nil {
+		return nil, errors.New("player_state.GetGameState", err)
 	}
 
-	if state.SessionLoopState == "INGAME" {
+	state := &GameState{
+		MatchMode:    matchDetails.ModeID,
+		MapPath:      matchDetails.MapUrl,
+		IsCustomGame: matchDetails.ProvisioningFlow == "CustomGame",
+		MatchID:      matchDetails.MatchID,
+		StartTime:    time.Now(),
+		AgentID:      findAgentIdByPlayerUUID(c.puuid, matchDetails.Players),
+	}
+
+	if presence, err := c.getPlayerState(); err == nil && presence != nil {
 		state.AllyScore = presence.PartyOwnerMatchScoreAllyTeam
 		state.EnemyScore = presence.PartyOwnerMatchScoreEnemyTeam
-
-		gamePlayerResponse, err := c.GetGameMatchID()
-		if err != nil {
-			return nil, errors.New("player_state.GetGameState", err)
-		}
-
-		if gamePlayerResponse.MatchID != "" {
-			state.MatchID = gamePlayerResponse.MatchID
-			gameMatchDetails, err := c.GetGameMatchDetails(state.MatchID)
-			if err != nil {
-				return nil, errors.New("player_state.GetGameState", err)
-			}
-
-			state.AgentID = findAgentIdByPlayerUUID(c.puuid, gameMatchDetails.Players)
-		}
 	}
 
 	return state, nil

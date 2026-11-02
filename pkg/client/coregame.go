@@ -5,11 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
-func (c *Client) GetGameMatchID() (*GamePlayerResponse, error) {
+func (c *Client) GetGameMatch() (*GamePlayerResponse, error) {
 	response, err := c.doRemoteRequest(http.MethodGet, "/core-game/v1/players/"+c.puuid)
 	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			return nil, nil
+		}
 		return nil, errors.New("coregame.GetGameMatchID", errors.ErrRiotApiRequestFailed)
 	}
 	defer response.Body.Close()
