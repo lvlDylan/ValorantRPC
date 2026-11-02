@@ -21,6 +21,8 @@ var (
 
 	ErrRiotApiRequestFailed = errors.New("riot api request failed")
 	ErrRiotApiMalformed     = errors.New("riot api response is malformed")
+
+	ErrPlayerNotFound = errors.New("player not found")
 )
 
 type AppError struct {
