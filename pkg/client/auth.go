@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 func (c *Client) Auth() error {
@@ -50,6 +51,27 @@ func (c *Client) FetchVersion() error {
 	return nil
 }
 
+func mapRegion(region string) string {
+	switch strings.ToLower(region) {
+	case "euw", "eune", "eu":
+		return "eu"
+	case "na", "na1":
+		return "na"
+	case "ap", "asia":
+		return "ap"
+	case "kr", "korea":
+		return "kr"
+	case "latam":
+		return "latam"
+	case "br", "brasil":
+		return "br"
+	case "pbe":
+		return "pbe"
+	default:
+		return region
+	}
+}
+
 func (c *Client) FetchRegion() error {
 	response, err := c.doLocalRequest(http.MethodGet, "/riotclient/region-locale")
 	if err != nil {
@@ -63,7 +85,7 @@ func (c *Client) FetchRegion() error {
 		return errors.New("client.FetchRegion", cause)
 	}
 
-	c.region = region.Region
+	c.region = mapRegion(region.Region)
 
 	return nil
 }
