@@ -20,6 +20,10 @@ func New(c *client.Client, d *discord.Client, logger logging.Logger, interval ti
 func (e *Engine) Start() {
 	e.logger.Info("Starting application. Press CTRL+C to stop.")
 	e.discord.Connect()
+	err := e.client.EnsureConnected()
+	if err != nil {
+		panic("Failed to auth Valorant Client")
+	}
 
 	ticker := time.NewTicker(e.interval)
 	defer ticker.Stop()
