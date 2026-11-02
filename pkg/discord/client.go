@@ -14,14 +14,19 @@ func New(appID string, translator i18n.Translator, registry *assets.Registry, lo
 	return &Client{translator: translator, appID: appID, registry: registry, logger: logger}
 }
 
-func (c *Client) Connect() {
+func (c *Client) Connect() error {
 	if c.connected {
-		return
+		return nil
 	}
 
 	rpcClient := discord.NewClient(c.appID)
+	if err := rpcClient.Login(); err != nil {
+		return errors.New("discord.Connect", err)
+	}
+
 	c.rpc = rpcClient
 	c.connected = true
+	return nil
 }
 
 func (c *Client) Disconnect() {
@@ -35,7 +40,10 @@ func (c *Client) Disconnect() {
 
 func (c *Client) Update(state *client.GameState) error {
 	if !c.connected {
-		c.Connect()
+		err := c.Connect()
+		if err != nil {
+			return errors.New("discord.Update", err)
+		}
 	}
 
 	activity := c.mapGameStateToActivity(state)
