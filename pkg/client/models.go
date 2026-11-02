@@ -54,6 +54,7 @@ type Private struct {
 	PartyOwnerMatchScoreAllyTeam  int    `json:"partyOwnerMatchScoreAllyTeam"`
 	PartyOwnerMatchScoreEnemyTeam int    `json:"partyOwnerMatchScoreEnemyTeam"`
 	QueueID                       string `json:"queueId"`
+	ProvisioningFlow              string `json:"provisioningFlow"`
 }
 
 type GamePlayerResponse struct {

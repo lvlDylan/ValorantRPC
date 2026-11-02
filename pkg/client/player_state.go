@@ -20,35 +20,17 @@ func capitalize(s string) string {
 	return string(runes)
 }
 
-func formatQueueId(provisioningFlow string, queueID string, isCustomGame bool) string {
-	if isCustomGame || strings.EqualFold(provisioningFlow, "CustomGame") {
-		return "Custom Game"
+func formatQueueId(provisioningFlow string, queueID string) string {
+	if strings.EqualFold(provisioningFlow, "CustomGame") {
+		return "custom"
 	}
 
-	if queueID != "" {
-		switch strings.ToLower(queueID) {
-		case "competitive":
-			return "Competitive"
-		case "unrated":
-			return "Unrated"
-		case "swiftplay":
-			return "Swiftplay"
-		case "spikerush":
-			return "Spike Rush"
-		case "deathmatch":
-			return "Deathmatch"
-		case "hurm":
-			return "Team Deathmatch"
-		case "ggteam":
-			return "Escalation"
-		case "onefa":
-			return "Replication"
-		default:
-			return capitalize(queueID)
-		}
+	cleanQueue := strings.ToLower(strings.TrimSpace(queueID))
+	if cleanQueue != "" {
+		return cleanQueue
 	}
 
-	return "In match"
+	return "unrated"
 }
 
 func (c *Client) getPlayerState() (*Private, error) {
@@ -110,7 +92,7 @@ func (c *Client) GetGameState() (*GameState, error) {
 	}
 
 	state := &GameState{
-		MatchMode:    matchDetails.ModeID,
+		MatchMode:    formatQueueId(matchDetails.ProvisioningFlow, ""),
 		MapPath:      matchDetails.MapUrl,
 		IsCustomGame: matchDetails.ProvisioningFlow == "CustomGame",
 		MatchID:      matchDetails.MatchID,
@@ -119,6 +101,7 @@ func (c *Client) GetGameState() (*GameState, error) {
 	}
 
 	if presence, err := c.getPlayerState(); err == nil && presence != nil {
+		state.MatchMode = formatQueueId(presence.ProvisioningFlow, presence.QueueID)
 		state.AllyScore = presence.PartyOwnerMatchScoreAllyTeam
 		state.EnemyScore = presence.PartyOwnerMatchScoreEnemyTeam
 	}
