@@ -22,9 +22,6 @@ func (c *Client) mapGameStateToActivity(state *client.GameState) discord.Activit
 				LargeImage: "valorant_logo",
 				LargeText:  "VALORANT",
 			},
-			Timestamps: &discord.Timestamps{
-				Start: state.StartTime.Unix(),
-			},
 		}
 	}
 
@@ -50,9 +47,12 @@ func (c *Client) mapGameStateToActivity(state *client.GameState) discord.Activit
 			SmallImage: agent.Asset,
 			SmallText:  agent.DisplayName,
 		},
-		Timestamps: &discord.Timestamps{
+	}
+
+	if !state.StartTime.IsZero() {
+		act.Timestamps = &discord.Timestamps{
 			Start: state.StartTime.Unix(),
-		},
+		}
 	}
 
 	return act

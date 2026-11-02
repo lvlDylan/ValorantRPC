@@ -51,13 +51,13 @@ func (e *Engine) tick() {
 			e.currentMatchID = state.MatchID
 			e.matchStartTime = time.Now()
 			e.logger.Info("New match started", "match_id", state.MatchID)
-			state.StartTime = e.matchStartTime
 		}
+
+		state.StartTime = e.matchStartTime
 	} else {
 		e.currentMatchID = ""
-		e.matchStartTime = time.Now()
+		e.matchStartTime = time.Time{}
 		state.StartTime = e.matchStartTime
-		e.logger.Info("Match is ended.")
 	}
 
 	if err := e.discord.Update(state); err != nil {
