@@ -10,7 +10,7 @@ import (
 
 type Client struct {
 	rpc        *discord.Client
-	logger     *logging.Logger
+	logger     logging.Logger
 	registry   *assets.Registry
 	translator i18n.Translator
 

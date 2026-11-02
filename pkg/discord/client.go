@@ -10,7 +10,7 @@ import (
 	discord "github.com/ffx64/discord-rpc-go/client"
 )
 
-func New(appID string, translator i18n.Translator, registry *assets.Registry, logger *logging.Logger) *Client {
+func New(appID string, translator i18n.Translator, registry *assets.Registry, logger logging.Logger) *Client {
 	return &Client{translator: translator, appID: appID, registry: registry, logger: logger}
 }
 
