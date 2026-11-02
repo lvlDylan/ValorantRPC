@@ -1,0 +1,16 @@
+{
+  "rpc.menu.details": "In the menus",
+  "rpc.menu.state": "Waiting in the lobby",
+  "rpc.ingame.details": "%s • %s",
+  "rpc.ingame.state": "%s Score: %d - %d",
+  "queue.custom": "Custom Game",
+  "queue.competitive": "Competitive",
+  "queue.unrated": "Unrated",
+  "queue.swiftplay": "Swiftplay",
+  "queue.spikerush": "Spike Rush",
+  "queue.deathmatch": "Deathmatch",
+  "queue.hurm": "Team Deathmatch",
+  "queue.ggteam": "Escalation",
+  "queue.onefa": "Replication",
+  "queue.in_match": "In match"
+}
