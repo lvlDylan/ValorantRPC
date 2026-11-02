@@ -51,8 +51,7 @@ func (c *Client) FetchVersion() error {
 }
 
 func (c *Client) FetchRegion() error {
-	//riotclient/region-local
-	response, err := c.doLocalRequest(http.MethodGet, "/riotclient/region-local")
+	response, err := c.doLocalRequest(http.MethodGet, "/riotclient/region-locale")
 	if err != nil {
 		return errors.New("client.FetchRegion", err)
 	}
