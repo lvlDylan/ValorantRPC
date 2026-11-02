@@ -3,6 +3,7 @@ package client
 import (
 	"ValorantRPC/pkg/lockfile"
 	"net/http"
+	"time"
 )
 
 type Client struct {
@@ -41,6 +42,7 @@ type GameState struct {
 	EnemyScore       int
 	MatchID          string
 	AgentID          string
+	StartTime        time.Time
 }
 
 type PresenceResponse struct {
