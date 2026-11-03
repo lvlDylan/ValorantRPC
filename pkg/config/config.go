@@ -20,10 +20,10 @@ type I18nConfig struct {
 type AppConfig struct {
 	PollingInterval int           `json:"refresh_interval"`
 	Logging         LoggingConfig `json:"logging"`
-	Language        string        `json:"Language"`
+	Language        string        `json:"language"`
 }
 
-func defaultAppConfig() *AppConfig {
+func DefaultAppConfig() *AppConfig {
 	return &AppConfig{
 		PollingInterval: 15,
 		Logging: LoggingConfig{
@@ -36,7 +36,7 @@ func defaultAppConfig() *AppConfig {
 }
 
 func Load(configPath string) (*AppConfig, error) {
-	cfg := defaultAppConfig()
+	cfg := DefaultAppConfig()
 
 	if configPath == "" {
 		configPath = "config.json"

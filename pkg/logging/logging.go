@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"ValorantRPC/pkg/config"
 	"ValorantRPC/pkg/errors"
 	"fmt"
 	"io"
@@ -14,12 +15,6 @@ type Logger interface {
 	Info(msg string, args ...any)
 	Warn(msg string, args ...any)
 	Error(msg string, args ...any)
-}
-
-type Config struct {
-	Level      string
-	JSONFormat bool
-	FilePath   string
 }
 
 type Log struct {
@@ -41,7 +36,7 @@ func parseLevel(levelStr string) slog.Level {
 	}
 }
 
-func New(cfg Config) (*Log, error) {
+func New(cfg config.LoggingConfig) (*Log, error) {
 	var writer io.Writer = os.Stdout
 
 	if cfg.FilePath != "" {
