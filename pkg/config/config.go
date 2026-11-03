@@ -18,22 +18,20 @@ type I18nConfig struct {
 }
 
 type AppConfig struct {
-	RefreshInterval int           `json:"refresh_interval"`
+	PollingInterval int           `json:"refresh_interval"`
 	Logging         LoggingConfig `json:"logging"`
-	I18n            I18nConfig    `json:"i18n"`
+	Language        string        `json:"Language"`
 }
 
 func defaultAppConfig() *AppConfig {
 	return &AppConfig{
-		RefreshInterval: 15,
+		PollingInterval: 15,
 		Logging: LoggingConfig{
 			Level:      "info",
 			FilePath:   "",
 			JSONFormat: false,
 		},
-		I18n: I18nConfig{
-			Language: "en",
-		},
+		Language: "en",
 	}
 }
 
@@ -60,4 +58,23 @@ func Load(configPath string) (*AppConfig, error) {
 	}
 
 	return cfg, nil
+}
+
+func Save(configPath string, cfg *AppConfig) error {
+	if configPath == "" {
+		configPath = "config.json"
+	}
+
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		cause := fmt.Errorf("%w: %v", errors.ErrConfigFileMalformed, err)
+		return errors.New("config.Save", cause)
+	}
+
+	err = os.WriteFile(configPath, data, 0644)
+	if err != nil {
+		return errors.New("config.Save", err)
+	}
+
+	return nil
 }
