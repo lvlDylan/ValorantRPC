@@ -38,6 +38,12 @@ func (c *Client) Disconnect() {
 	}
 }
 
+func (c *Client) ClearActivity() {
+	if c.connected && c.rpc != nil {
+		c.rpc.SetActivity(discord.Activity{})
+	}
+}
+
 func isSameActivity(a, b discord.Activity) bool {
 	if a.Type != b.Type || a.Details != b.Details || a.State != b.State {
 		return false
