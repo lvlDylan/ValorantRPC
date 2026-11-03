@@ -4,6 +4,7 @@ import (
 	"ValorantRPC/pkg/client"
 	"ValorantRPC/pkg/discord"
 	"ValorantRPC/pkg/logging"
+	"context"
 	"time"
 )
 
@@ -17,50 +18,61 @@ func New(c *client.Client, d *discord.Client, logger logging.Logger, interval ti
 	}
 }
 
-func (e *Engine) Start() {
-	e.logger.Info("Starting application. Press CTRL+C to stop.")
-	err := e.discord.Connect()
-	if err != nil {
-		panic(err)
-	}
-
-	err = e.client.EnsureConnected()
-	if err != nil {
-		panic(err)
-	}
+func (e *Engine) Start(ctx context.Context, triggerScan chan struct{}, statusChan chan bool) {
+	e.logger.Info("Engine started successfully.")
 
 	ticker := time.NewTicker(e.interval)
 	defer ticker.Stop()
 
-	e.tick()
+	e.tick(statusChan)
 
-	for range ticker.C {
-		e.tick()
+	for {
+		select {
+		case <-ctx.Done():
+			e.logger.Info("Shutting down engine...")
+			e.discord.Disconnect()
+			return
+		case <-ticker.C:
+			e.tick(statusChan)
+		case <-triggerScan:
+			e.logger.Info("Triggering scan...")
+			e.tick(statusChan)
+		}
 	}
 }
 
-func (e *Engine) tick() {
-	state, err := e.client.GetGameState()
-	if err != nil {
-		e.logger.Error("Error getting game state", "error", err)
-		return
-	}
+func (e *Engine) tick(statusChan chan bool) {
 
-	if state.MatchID != "" {
-		if state.MatchID != e.currentMatchID {
-			e.currentMatchID = state.MatchID
-			e.matchStartTime = time.Now()
-			e.logger.Info("New match started", "match_id", state.MatchID)
+	isRunning := e.client.IsValorantRunning()
+	if isRunning {
+		if err := e.discord.Connect(); err == nil {
+			state, err := e.client.GetGameState()
+			if err != nil {
+				e.logger.Error("Error getting game state", "error", err)
+				return
+			}
+
+			if state.MatchID != "" {
+				if state.MatchID != e.currentMatchID {
+					e.currentMatchID = state.MatchID
+					e.matchStartTime = time.Now()
+					e.logger.Info("New match started", "match_id", state.MatchID)
+				}
+
+				state.StartTime = e.matchStartTime
+			} else {
+				e.currentMatchID = ""
+				e.matchStartTime = time.Time{}
+				state.StartTime = e.matchStartTime
+			}
+
+			if err := e.discord.Update(state); err != nil {
+				e.logger.Error("Error updating discord", "error", err)
+			}
+			statusChan <- true
 		}
-
-		state.StartTime = e.matchStartTime
 	} else {
-		e.currentMatchID = ""
-		e.matchStartTime = time.Time{}
-		state.StartTime = e.matchStartTime
-	}
-
-	if err := e.discord.Update(state); err != nil {
-		e.logger.Error("Error updating discord", "error", err)
+		e.discord.ClearActivity()
+		statusChan <- false
 	}
 }

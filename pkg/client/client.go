@@ -25,6 +25,14 @@ func New() (*Client, error) {
 	}, nil
 }
 
+func (c *Client) IsValorantRunning() bool {
+	_, err := lockfile.Read()
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 func (c *Client) IsConnected() bool {
 	return c.bearerToken != "" && c.lockfile != nil
 }
