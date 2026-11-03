@@ -38,6 +38,36 @@ func (c *Client) Disconnect() {
 	}
 }
 
+func isSameActivity(a, b discord.Activity) bool {
+	if a.Type != b.Type || a.Details != b.Details || a.State != b.State {
+		return false
+	}
+
+	if (a.Timestamps == nil) != (b.Timestamps == nil) {
+		return false
+	}
+	if a.Timestamps != nil && b.Timestamps != nil {
+		if a.Timestamps.Start != b.Timestamps.Start {
+			return false
+		}
+	}
+
+	if (a.Assets == nil) != (b.Assets == nil) {
+		return false
+	}
+
+	if a.Assets != nil && b.Assets != nil {
+		if a.Assets.LargeImage != b.Assets.LargeImage ||
+			a.Assets.LargeText != b.Assets.LargeText ||
+			a.Assets.SmallImage != b.Assets.SmallImage ||
+			a.Assets.SmallText != b.Assets.SmallText {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (c *Client) Update(state *client.GameState) error {
 	if !c.connected {
 		err := c.Connect()
@@ -47,10 +77,16 @@ func (c *Client) Update(state *client.GameState) error {
 	}
 
 	activity := c.mapGameStateToActivity(state)
+	if isSameActivity(c.lastActivity, activity) {
+		return nil
+	}
+
 	if err := c.rpc.SetActivity(activity); err != nil {
 		c.connected = false
 		return errors.New("discord.Update", err)
 	}
 
+	c.lastActivity = activity
+	c.logger.Debug("RPC updated", "details", activity.Details, "state", activity.State)
 	return nil
 }

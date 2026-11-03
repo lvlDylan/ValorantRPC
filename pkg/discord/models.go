@@ -9,10 +9,11 @@ import (
 )
 
 type Client struct {
-	rpc        *discord.Client
-	logger     logging.Logger
-	registry   *assets.Registry
-	translator i18n.Translator
+	rpc          *discord.Client
+	logger       logging.Logger
+	registry     *assets.Registry
+	translator   i18n.Translator
+	lastActivity discord.Activity
 
 	appID     string
 	connected bool

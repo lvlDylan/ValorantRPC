@@ -63,6 +63,4 @@ func (e *Engine) tick() {
 	if err := e.discord.Update(state); err != nil {
 		e.logger.Error("Error updating discord", "error", err)
 	}
-
-	e.logger.Debug("RPC updated", "mode", state.MatchMode, "map", state.MapPath, "match_id", state.MatchID)
 }
