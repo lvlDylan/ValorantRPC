@@ -1,4 +1,10 @@
 {
+  "app.menus.waiting": "Status: Waiting for valorant",
+  "app.menus.running": "Status: Valorant is detected",
+  "app.menus.scan_now": "Scan now",
+  "app.menus.scan_now.tooltip": "Scan to check if Valorant is launched",
+  "app.menus.language": "Language",
+  "app.menus.quit": "Quit",
   "rpc.menus.details": "In the menus",
   "rpc.menus.state": "Waiting in the lobby",
   "rpc.ingame.details": "%s • %s",

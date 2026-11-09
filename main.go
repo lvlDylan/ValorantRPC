@@ -36,33 +36,37 @@ func onReady() {
 		panic(err)
 	}
 
+	translator, err := i18n.NewService(cfg.Language)
+	if err != nil {
+		logger.Error("Error initializing i18n service, fallback to English", "error", err)
+	}
+
 	logger.Info("Initializing Valorant RPC...")
 
 	systray.SetTitle("ValorantRPC")
 	systray.SetTooltip("Valorant Rich Presence")
 
-	mStatus := systray.AddMenuItem("Status: Waiting for valorant", "")
+	mStatus := systray.AddMenuItem(translator.T("app.menus.waiting"), "")
 	mStatus.Disable()
 
-	mScanNow := systray.AddMenuItem("Scan Now", "Scan Now to find Valorant instance")
+	mScanNow := systray.AddMenuItem(translator.T("app.menus.scan_now"), translator.T("app.menus.scan_now.tooltip"))
 	systray.AddSeparator()
 
-	mQuit := systray.AddMenuItem("Quit", "Quit ValorantRPC")
+	mLang := systray.AddMenuItem(translator.T("app.menus.language"), "")
+	mEn := mLang.AddSubMenuItem("English", "")
+	mFr := mLang.AddSubMenuItem("Français", "")
+	mEn.Show()
+	mFr.Show()
+	systray.AddSeparator()
 
-	translator, err := i18n.NewService("fr")
-	if err != nil {
-		logger.Error("Error initializing i18n service, fallback to English", "error", err)
-	}
+	mQuit := systray.AddMenuItem(translator.T("app.menus.quit"), "")
+
+	riotClient := client.New()
 
 	registry, err := assets.NewRegistry()
 	if err != nil {
 		logger.Error("Error initializing Valorant assets registry", "error", err)
 		return
-	}
-
-	riotClient, err := client.New()
-	if err != nil {
-		panic(err)
 	}
 
 	discordClient = discord.New(DiscordAppId, translator, registry, logger)
@@ -75,21 +79,46 @@ func onReady() {
 	go func() {
 		for isRunning := range statusChan {
 			if isRunning {
-				mStatus.SetTitle("Status: Valorant Active")
+				mStatus.SetTitle(translator.T("app.menus.running"))
 				mScanNow.Disable()
 			} else {
-				mStatus.SetTitle("Status: Valorant not found")
+				mStatus.SetTitle(translator.T("app.menus.waiting"))
 				mScanNow.Enable()
 			}
 		}
 	}()
+
+	switchLanguage := func(newLang string) {
+		logger.Info("Switching language", "language", newLang)
+
+		cfg.Language = newLang
+		if err := config.Save("config.json", cfg); err != nil {
+			logger.Error("Error switching language", "error", err)
+		}
+
+		if err := translator.SetLang(newLang); err != nil {
+			logger.Error("Error switching language", "error", err)
+			return
+		}
+
+		mScanNow.SetTitle(translator.T("app.menus.scan_now"))
+		mLang.SetTitle(translator.T("app.menus.language"))
+		mQuit.SetTitle(translator.T("app.menus.quit"))
+
+		select {
+		case triggerScan <- struct{}{}:
+		default:
+		}
+	}
+
+	mEn.Click(func() { switchLanguage("en") })
+	mFr.Click(func() { switchLanguage("fr") })
 
 	mScanNow.Click(func() {
 		logger.Info("Starting manual valorant scan...")
 		select {
 		case triggerScan <- struct{}{}:
 		default:
-
 		}
 	})
 
