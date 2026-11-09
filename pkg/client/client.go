@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func New() (*Client, error) {
+func New() *Client {
 	remoteHttpClient := http.DefaultClient
 	localHttpClient := &http.Client{
 		Timeout: time.Second * 10,
@@ -22,7 +22,7 @@ func New() (*Client, error) {
 	return &Client{
 		localClient:  localHttpClient,
 		remoteClient: remoteHttpClient,
-	}, nil
+	}
 }
 
 func (c *Client) IsValorantRunning() bool {
