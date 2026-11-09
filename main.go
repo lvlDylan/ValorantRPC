@@ -76,8 +76,10 @@ func onReady() {
 		for isRunning := range statusChan {
 			if isRunning {
 				mStatus.SetTitle("Status: Valorant Active")
+				mScanNow.Disable()
 			} else {
 				mStatus.SetTitle("Status: Valorant not found")
+				mScanNow.Enable()
 			}
 		}
 	}()
