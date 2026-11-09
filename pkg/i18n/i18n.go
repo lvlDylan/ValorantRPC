@@ -55,3 +55,29 @@ func (s *Service) T(key string, args ...any) string {
 func (s *Service) Lang() string {
 	return s.lang
 }
+
+func (s *Service) loadTranslations(lang string) error {
+	filePath := path.Join("locales", lang+".json")
+	data, err := localeFS.ReadFile(filePath)
+	if err != nil {
+		if lang == "en" {
+			return errors.New("i18n.NewService", errors.ErrLocaleNotFound)
+		}
+
+		return s.loadTranslations("en")
+	}
+
+	translations := make(map[string]string)
+	err = json.Unmarshal(data, &translations)
+	if err != nil {
+		return err
+	}
+
+	s.lang = lang
+	s.translations = translations
+	return nil
+}
+
+func (s *Service) SetLang(lang string) error {
+	return s.loadTranslations(lang)
+}
