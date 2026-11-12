@@ -45,6 +45,7 @@ func (e *Engine) tick(statusChan chan bool) {
 
 	isRunning := e.client.IsValorantRunning()
 	if isRunning {
+		statusChan <- true
 		if err := e.discord.Connect(); err == nil {
 			state, err := e.client.GetGameState()
 			if err != nil {
@@ -69,7 +70,6 @@ func (e *Engine) tick(statusChan chan bool) {
 			if err := e.discord.Update(state); err != nil {
 				e.logger.Error("Error updating discord", "error", err)
 			}
-			statusChan <- true
 		}
 	} else {
 		e.discord.ClearActivity()
