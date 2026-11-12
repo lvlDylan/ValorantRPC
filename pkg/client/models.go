@@ -25,10 +25,18 @@ type entitlementsResponse struct {
 }
 
 type session struct {
-	Version string `json:"version"`
+	Version   string `json:"version"`
+	ProductID string `json:"productId"`
+	ExitCode  *int   `json:"exitCode"`
 }
 
 type externalSessionResponse map[string]session
+
+type chatSessionResponse struct {
+	Loaded    bool   `json:"loaded"`
+	ProductID string `json:"product_id"`
+	PUUID     string `json:"puuid"`
+}
 
 type regionResponse struct {
 	Region string `json:"region"`
@@ -48,6 +56,7 @@ type PresenceResponse struct {
 	Presence []struct {
 		Puuid   string `json:"puuid"`
 		Private string `json:"private"`
+		Product string `json:"product"`
 	} `json:"presences"`
 }
 type Private struct {

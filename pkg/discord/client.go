@@ -41,6 +41,7 @@ func (c *Client) Disconnect() {
 func (c *Client) ClearActivity() {
 	if c.connected && c.rpc != nil {
 		c.rpc.SetActivity(discord.Activity{})
+		c.rpc.Close()
 	}
 }
 

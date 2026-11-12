@@ -4,6 +4,7 @@ import (
 	"ValorantRPC/pkg/errors"
 	"ValorantRPC/pkg/lockfile"
 	"crypto/tls"
+	"encoding/json"
 	"net/http"
 	"time"
 )
@@ -26,11 +27,39 @@ func New() *Client {
 }
 
 func (c *Client) IsValorantRunning() bool {
-	_, err := lockfile.Read()
+	lf, err := lockfile.Read()
 	if err != nil {
+		c.Reset()
 		return false
 	}
-	return true
+
+	c.lockfile = lf
+
+	response, err := c.doLocalRequest(http.MethodGet, "/chat/v4/presences")
+	if err != nil {
+		c.Reset()
+		return false
+	}
+	defer response.Body.Close()
+
+	var presences PresenceResponse
+	if err := json.NewDecoder(response.Body).Decode(&presences); err != nil {
+		c.Reset()
+		return false
+	}
+
+	for _, presence := range presences.Presence {
+		err := c.EnsureConnected()
+		if err != nil {
+			return false
+		}
+		if presence.Puuid == c.puuid && presence.Product == "valorant" {
+			return true
+		}
+	}
+
+	c.Reset()
+	return false
 }
 
 func (c *Client) IsConnected() bool {
