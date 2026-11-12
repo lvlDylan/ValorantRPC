@@ -9,6 +9,7 @@ import (
 	"ValorantRPC/pkg/i18n"
 	"ValorantRPC/pkg/logging"
 	"context"
+	_ "embed"
 	"time"
 
 	"github.com/energye/systray"
@@ -24,6 +25,9 @@ var (
 func main() {
 	systray.Run(onReady, onExit)
 }
+
+//go:embed ico.ico
+var appIcon []byte
 
 func onReady() {
 	cfg, err := config.Load("config.json")
@@ -45,6 +49,7 @@ func onReady() {
 
 	systray.SetTitle("ValorantRPC")
 	systray.SetTooltip("Valorant Rich Presence")
+	systray.SetIcon(appIcon)
 
 	mStatus := systray.AddMenuItem(translator.T("app.menus.waiting"), "")
 	mStatus.Disable()
