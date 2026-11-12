@@ -14,12 +14,12 @@ func (c *Client) GetGameMatch() (*GamePlayerResponse, error) {
 		if strings.Contains(err.Error(), "404") {
 			return nil, nil
 		}
-		return nil, errors.New("coregame.GetGameMatchID", errors.ErrRiotApiRequestFailed)
+		return nil, errors.New("coregame.GetGameMatch", errors.ErrRiotApiRequestFailed)
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, errors.New("coregame.GetGameMatchID", errors.ErrRiotApiRequestFailed)
+		return nil, errors.New("coregame.GetGameMatch", errors.ErrRiotApiRequestFailed)
 	}
 
 	var gamePlayerResponse GamePlayerResponse
