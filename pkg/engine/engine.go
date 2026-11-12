@@ -47,28 +47,30 @@ func (e *Engine) tick(statusChan chan bool) {
 	if isRunning {
 		statusChan <- true
 		if err := e.discord.Connect(); err == nil {
-			state, err := e.client.GetGameState()
-			if err != nil {
-				e.logger.Error("Error getting game state", "error", err)
-				return
-			}
-
-			if state.MatchID != "" {
-				if state.MatchID != e.currentMatchID {
-					e.currentMatchID = state.MatchID
-					e.matchStartTime = time.Now()
-					e.logger.Info("New match started", "match_id", state.MatchID)
+			if err := e.client.EnsureConnected(); err == nil {
+				state, err := e.client.GetGameState()
+				if err != nil {
+					e.logger.Error("Error getting game state", "error", err)
+					return
 				}
 
-				state.StartTime = e.matchStartTime
-			} else {
-				e.currentMatchID = ""
-				e.matchStartTime = time.Time{}
-				state.StartTime = e.matchStartTime
-			}
+				if state.MatchID != "" {
+					if state.MatchID != e.currentMatchID {
+						e.currentMatchID = state.MatchID
+						e.matchStartTime = time.Now()
+						e.logger.Info("New match started", "match_id", state.MatchID)
+					}
 
-			if err := e.discord.Update(state); err != nil {
-				e.logger.Error("Error updating discord", "error", err)
+					state.StartTime = e.matchStartTime
+				} else {
+					e.currentMatchID = ""
+					e.matchStartTime = time.Time{}
+					state.StartTime = e.matchStartTime
+				}
+
+				if err := e.discord.Update(state); err != nil {
+					e.logger.Error("Error updating discord", "error", err)
+				}
 			}
 		}
 	} else {
